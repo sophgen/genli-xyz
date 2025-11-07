@@ -1,0 +1,139 @@
+# Main page settings
+mainSections = ["post"]
+featuredImageField = "image"
+rssFullContent = true
+favicon = "/favicon.png"
+
+# Footer settings
+[footer]
+since = 2025
+customText = "Exploring the frontiers of Artificial Intelligence"
+
+# Sidebar settings
+[sidebar]
+emoji = "🤖"
+subtitle = "A blog exploring AI, machine learning, and the future of technology"
+
+# Sidebar avatar settings
+[sidebar.avatar]
+enabled = true
+local = true
+src = "img/avatar.png"
+
+# Article settings
+[article]
+math = false
+toc = true
+readingTime = true
+[article.license]
+enabled = false
+default = "Licensed under CC BY-NC-SA 4.0"
+
+# Comments system settings
+[comments]
+enabled = false
+provider = "disqus"
+
+[comments.disqusjs]
+shortname = ""
+apiUrl = ""
+apiKey = ""
+admin = ""
+adminLabel = ""
+
+[comments.utterances]
+repo = ""
+issueTerm = "pathname"
+label = ""
+
+[comments.beaudar]
+repo = ""
+issueTerm = "pathname"
+label = ""
+theme = ""
+
+[comments.remark42]
+host = ""
+site = ""
+locale = ""
+
+[comments.vssue]
+platform = ""
+owner = ""
+repo = ""
+clientId = ""
+clientSecret = ""
+autoCreateIssue = false
+
+[comments.waline]
+serverURL = ""
+lang = ""
+pageview = ""
+emoji = ["https://unpkg.com/@waline/emojis@1.0.1/weibo"]
+requiredMeta = []
+locale = ""
+placeholder = ""
+
+[comments.twikoo]
+envId = ""
+region = ""
+path = ""
+lang = ""
+
+[comments.cusdis]
+host = ""
+id = ""
+
+[comments.commento]
+url = ""
+
+[comments.giscus]
+repo = ""
+repoID = ""
+category = ""
+categoryID = ""
+mapping = ""
+lightTheme = ""
+darkTheme = ""
+reactionsEnabled = 1
+emitMetadata = 0
+
+# Widgets settings
+[[widgets.homepage]]
+type = "search"
+
+[[widgets.homepage]]
+type = "archives"
+[widgets.homepage.params]
+limit = 5
+
+[[widgets.homepage]]
+type = "categories"
+[widgets.homepage.params]
+limit = 10
+
+[[widgets.homepage]]
+type = "tag-cloud"
+[widgets.homepage.params]
+limit = 10
+
+[[widgets.page]]
+type = "toc"
+
+# Default image settings
+[opengraph.defaultImage]
+enabled = false
+local = false
+src = ""
+
+# Color scheme settings
+[colorScheme]
+toggle = true
+default = "auto"
+
+# Image processing settings
+[imageProcessing.cover]
+enabled = true
+[imageProcessing.content]
+enabled = true
+
