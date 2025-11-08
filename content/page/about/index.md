@@ -2,54 +2,51 @@
 title: About
 description: Learn more about this blog and its creator
 date: '2025-11-07'
+type: page
+slug: "about"
+permalink: "/about/"
 aliases:
   - about-us
   - about-hugo
   - contact
 license: CC BY-NC-ND
-lastmod: '2025-11-07'
+lastmod: '2025-11-08'
 ---
 
-## About Me
+I build practical AI products and data systems. With a background in optimization and machine learning engineering, I convert real business problems into reliable, measurable solutions—favoring simple designs, strong evaluation, and clean handoffs.
 
-This is a placeholder for information about yourself. You can include:
+## Current Work
 
-- Your background and experience in AI
-- Your current work or research
-- Your interests and specializations within AI
-- What motivated you to start this blog
+I help teams adopt Generative AI responsibly—from strategy to production:
+- Evaluate use cases and prioritize by ROI and feasibility
+- Design retrieval, orchestration, and evaluation pipelines
+- Ship maintainable services with MLOps, monitoring, and guardrails
 
-## About This Blog
+## Specializations in AI
 
-This blog is dedicated to exploring the fascinating world of Artificial Intelligence. Here you'll find:
+- LLM applications: RAG, agents, tool use, evaluations
+- NLP and text intelligence across the document lifecycle
+- ML systems and MLOps (observability, CI/CD, data pipelines)
+- Optimization and decision science
+- Data strategy, governance, and cost management
 
-- In-depth technical articles about AI and machine learning
-- Tutorials and practical guides
-- Thoughts on AI ethics and responsible development
-- Commentary on the latest developments in the field
-- Real-world applications and case studies
+## Selected Projects
 
-## My Focus Areas
+- Built a retrieval-augmented QA service that reduced support load
+- Automated document understanding and enrichment for knowledge bases
 
-Placeholder for listing your specific areas of interest and expertise:
+## Principles
 
-- Machine Learning
-- Deep Learning
-- Natural Language Processing
-- Computer Vision
-- AI Ethics
-- [Add your specific interests]
+- Start simple; measure everything
+- Production first: reliability, cost, and latency matter
+- Privacy and safety by default
+- Clear docs and ownership
 
-## Get in Touch
+## What Motivates Me
 
-Placeholder for your contact information and social media links. Feel free to reach out if you'd like to:
+This site is my lab notebook: a place to capture what I learn, clarify thinking, and share practical patterns with the community.
 
-- Discuss AI topics
-- Collaborate on projects
-- Provide feedback
-- Suggest article topics
+## Let’s Connect
 
----
-
-Thank you for visiting my blog! I hope you find the content valuable and engaging.
+Have a project in mind or want to compare notes? Reach out on LinkedIn/GitHub (see footer), or open an issue via the repository.
 
