@@ -17,3 +17,7 @@ hasCJKLanguage = false
 # Change it to your Disqus shortname before using
 disqusShortname = ""
 
+# Permalink configuration for pages
+[permalinks]
+page = "/:slug/"
+
