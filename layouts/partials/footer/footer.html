@@ -1,16 +1,5 @@
 <footer class="site-footer">
     <section class="copyright">
-        &copy; 
-        {{ if and (.Site.Params.footer.since) (ne .Site.Params.footer.since (int (now.Format "2006"))) }}
-            {{ .Site.Params.footer.since }} - 
-        {{ end }}
-        {{ now.Format "2006" }} {{ .Site.Title }}
+        Copyright © {{ now.Format "2006" }} Gen Li. All rights reserved.
     </section>
-    
-    {{ with .Site.Params.footer.customText }}
-    <section class="powerby">
-        {{ . | markdownify }}
-    </section>
-    {{ end }}
 </footer>
-
