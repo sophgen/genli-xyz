@@ -44,7 +44,7 @@ icon = "brand-github"
 [[social]]
 identifier = "linkedin"
 name = "LinkedIn"
-url = "https://www.linkedin.com/"
+url = "https://www.linkedin.com/in/gen-ai/"
 [social.params]
 icon = "brand-linkedin"
 
