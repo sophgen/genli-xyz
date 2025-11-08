@@ -41,10 +41,3 @@ url = "https://github.com/"
 [social.params]
 icon = "brand-github"
 
-[[social]]
-identifier = "twitter"
-name = "Twitter"
-url = "https://twitter.com/"
-[social.params]
-icon = "brand-twitter"
-
