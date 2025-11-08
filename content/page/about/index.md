@@ -25,9 +25,8 @@ I help teams adopt Generative AI responsibly—from strategy to production:
 ## Specializations in AI
 
 - LLM applications: RAG, agents, tool use, evaluations
-- NLP and text intelligence across the document lifecycle
-- ML systems and MLOps (observability, CI/CD, data pipelines)
 - Optimization and decision science
+- ML systems and MLOps (observability, CI/CD, data pipelines)
 - Data strategy, governance, and cost management
 
 ## Selected Projects
