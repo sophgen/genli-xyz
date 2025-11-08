@@ -5,7 +5,7 @@ slug: "pregel-what-is-behind-langgraph"
 date: 2025-11-08T14:58:19-06:00
 draft: false
 categories:
-  - "AI-agent-framework"
+  - "ai-agent"
   - "generative-ai"
 tags:
   - "pregel"
