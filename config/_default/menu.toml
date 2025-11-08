@@ -41,3 +41,10 @@ url = "https://github.com/"
 [social.params]
 icon = "brand-github"
 
+[[social]]
+identifier = "linkedin"
+name = "LinkedIn"
+url = "https://www.linkedin.com/"
+[social.params]
+icon = "brand-linkedin"
+
