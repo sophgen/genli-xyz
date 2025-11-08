@@ -1,6 +1,6 @@
 ---
-title: "Demystifying Pregel: How Google Tackles Mind-Bogglingly Big Graphs"
-description: "Discover how Google's Pregel system handles massive graph computations and powers modern frameworks like LangGraph."
+title: "From Pregel to LangGraph: How Google's Graph Model Powers Modern AI Agents"
+description: "From web-scale graph processing to AI agent orchestration: discover how thinking in graphs makes complex systems simple and scalable."
 slug: "pregel-what-is-behind-langgraph"
 date: 2025-11-08T14:58:19-06:00
 draft: false
