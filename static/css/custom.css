@@ -1,0 +1,19 @@
+/* Custom styles for article subtitle */
+.article-subtitle {
+    font-size: 1.5rem !important;
+    line-height: 1.7;
+    font-weight: normal;
+}
+
+/* Alternative selector if the class is different */
+h3.article-subtitle {
+    font-size: 1.5rem !important;
+    line-height: 1.7;
+    font-weight: normal;
+}
+
+/* Hide unused widget icon blocks in sidebar widgets */
+.widget-icon {
+    display: none !important;
+}
+
