@@ -17,3 +17,22 @@ h3.article-subtitle {
     display: none !important;
 }
 
+/* Fix category listing boxes - reduce size and align text properly */
+.article-list--compact .article-details {
+    min-height: auto !important;
+    padding: 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+}
+
+.article-list--compact .article-details .article-title {
+    margin-bottom: 0.5rem !important;
+    margin-top: 0 !important;
+}
+
+.article-list--compact .article-details .article-time {
+    margin-top: auto !important;
+}
+

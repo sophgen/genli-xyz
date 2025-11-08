@@ -1,6 +1,5 @@
 ---
 title: About
-description: Learn more about this blog and its creator
 date: '2025-11-07'
 type: page
 slug: "about"
