@@ -8,11 +8,6 @@ aliases:
   - contact
 license: CC BY-NC-ND
 lastmod: '2025-11-07'
-menu:
-    main: 
-        weight: -90
-        params:
-            icon: user
 ---
 
 ## About Me

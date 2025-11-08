@@ -1,4 +1,13 @@
-<figure class="site-avatar">
-    <img src="/img/avatar.png" width="150" height="150" class="site-logo" loading="lazy" alt="Avatar">
-</figure>
+{{- $avatar := resources.Get "img/avatar.png" -}}
+{{- if $avatar -}}
+    {{- $avatar = $avatar.Fill "300x300" -}}
+    <figure class="site-avatar">
+        <img src="{{ $avatar.RelPermalink }}" width="300" height="300" class="site-logo" loading="lazy" alt="Avatar">
+    </figure>
+{{- else -}}
+    {{- /* Fallback to static file if not found in assets */ -}}
+    <figure class="site-avatar">
+        <img src="/img/avatar.png" width="300" height="300" class="site-logo" loading="lazy" alt="Avatar">
+    </figure>
+{{- end -}}
 
