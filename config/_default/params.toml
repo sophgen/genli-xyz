@@ -2,7 +2,7 @@
 mainSections = ["post"]
 featuredImageField = "image"
 rssFullContent = true
-favicon = "/favicon.png"
+favicon = "/favicon.ico"
 
 # Footer settings
 [footer]
