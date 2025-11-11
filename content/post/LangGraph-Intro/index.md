@@ -29,9 +29,12 @@ Agents come in many different forms, each with varying levels of autonomy and co
 **LangGraph** is designed to help you build agents that balance reliability with control. The pillars of LangGraph include persistence, streaming, human-in-the-loop, and controllability. 
 
 
-### Common Agent Architectures & Challenges
+### LangGraph Key Components
 
+**State** is a shared data structure that represents the current snapshot of your application. It's an object that gets passed between nodes and edges of the graph. It can be any data type, but is typically defined using a shared state schema.
 
+**Nodes** are functions that encode the logic of agents. They receive the current state as input, perform logic operations, and return an updated state.
 
-### Custom Agents with LangGraph
+**Edges** are functions that determine which node to execute next based on the current state. They can be conditional branches or fixed transitions.
 
+**State** holds the shared data, **nodes** do the work by updating the state, and **edges** tell what to do next based on the state.
