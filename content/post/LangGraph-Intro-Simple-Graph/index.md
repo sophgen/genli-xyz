@@ -2,7 +2,7 @@
 title: "LangGraph Intro - Simple Graph with Conditional Edges"
 description: "Low-level orchestration framework and runtime for building, managing, and deploying long-running, stateful agents."
 slug: "langGraph-intro"
-date: 2025-11-10T20:53:16-06:00
+date: 2025-11-15T10:16:50-06:00
 draft: false
 categories:
   - "ai-agent"
