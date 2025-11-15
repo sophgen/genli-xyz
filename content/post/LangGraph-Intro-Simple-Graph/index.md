@@ -1,5 +1,5 @@
 ---
-title: "LangGraph Intro"
+title: "LangGraph Intro - Simple Graph with Conditional Edges"
 description: "Low-level orchestration framework and runtime for building, managing, and deploying long-running, stateful agents."
 slug: "langGraph-intro"
 date: 2025-11-10T20:53:16-06:00
@@ -20,9 +20,9 @@ Agents come in many different forms, each with varying levels of autonomy and co
 
 ![Different kinds of Agents](agent.png)
 
-**Chain** is a set of steps before and after an LLM call. It's very reliable, with the same control flow every time.
+**Chain** is a set of steps before and after an LLM call. It's very reliable, with the same control flow every time, making it predictable and easy to debug.
 
-**Router Agents** represent a type with low-level control. As shown in the diagram above, a router agent has a limited set of predefined options (e.g., choosing between step 2 or step 3) that the LLM can select from. The decision-making is constrained to these specific pathways.
+**Router Agents** represent a type with low-level control. As shown in the diagram above, a router agent has a limited set of predefined options (e.g., choosing between step 2 or step 3) that the LLM can select from. The decision-making is constrained to these specific pathways, providing more predictable behavior.
 
 **Autonomous Agents**, in contrast, operate with greater flexibility. They can navigate through any sequence of steps from a given set of options, or even dynamically generate their own next actions based on available resources and context. This autonomy allows for more adaptive behavior but also requires more sophisticated orchestration.
 
@@ -37,11 +37,12 @@ Agents come in many different forms, each with varying levels of autonomy and co
 
 **Edges** are functions that determine which node to execute next based on the current state. They can be conditional branches or fixed transitions.
 
-**State** holds the shared data, **nodes** do the work by updating the state, and **edges** tell what to do next based on the state.
+**State** holds the shared data, **nodes** perform the work by updating the state, and **edges** determine what to do next based on the state.
 
 
 ### A Simple Graph Example
-Below is a simple graph example using LangGraph, it's has 3 nodes and one conditional edge using LangGraph.
+
+Below is a simple graph example using LangGraph. It has 3 nodes and one conditional edge.
 
 ![Simple Graph Example](simple_graph.png)
 
@@ -67,7 +68,7 @@ from IPython.display import Image, display
 
 #### State Definition
 
-The State schema serves as the input schema for all Nodes and Edges in the graph. We use `TypedDict` which provides type hints for the keys.
+The State schema serves as the input schema for all nodes and edges in the graph. We use `TypedDict`, which provides type hints for the keys.
 
 ```python
 class State(TypedDict):
@@ -142,7 +143,7 @@ def decide_mood(state) -> Literal["node_2", "node_3", "node_4"]:
         return "node_3"  # 20% chance
 ```
 
-**Note:** In a real application, you would typically use the state content to make routing decisions rather than random selection.
+**Note:** In a real application, you would typically use the state content to make routing decisions rather than random selection. For example, you might analyze the text content or use an LLM to determine the appropriate next step.
 
 #### Graph Construction
 
@@ -163,11 +164,13 @@ builder.add_node("node_3", node_3)
 builder.add_node("node_4", node_4)
 
 # Entry point
-builder.add_edge(START, "node_1")  
+builder.add_edge(START, "node_1")
+
 # Conditional routing
-builder.add_conditional_edges("node_1", decide_mood)  
+builder.add_conditional_edges("node_1", decide_mood)
+
 # Exit points
-builder.add_edge("node_2", END)  
+builder.add_edge("node_2", END)
 builder.add_edge("node_3", END)
 builder.add_edge("node_4", END)
 
@@ -175,9 +178,27 @@ builder.add_edge("node_4", END)
 graph = builder.compile()
 ```
 
-You could view the graph by running command below
+You can view the graph by running the command below:
+
 ```python
 display(Image(graph.get_graph().draw_mermaid_png()))
 ```
 
 ![Simple Graph Example](langgraph_simple_rendering.png)
+
+#### Graph Execution
+
+Now we can invoke the graph:
+
+```python
+result = graph.invoke({"graph_state": "Hi, this is Gen."})
+print(result)
+```
+
+The result below shows the execution path through node 1 and node 4:
+
+```
+---Node 1---
+---Node 4---
+{'graph_state': 'Hi, this is Gen. I am Indifferent!'}
+```
