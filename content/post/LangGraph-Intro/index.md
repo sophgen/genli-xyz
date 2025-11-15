@@ -38,3 +38,146 @@ Agents come in many different forms, each with varying levels of autonomy and co
 **Edges** are functions that determine which node to execute next based on the current state. They can be conditional branches or fixed transitions.
 
 **State** holds the shared data, **nodes** do the work by updating the state, and **edges** tell what to do next based on the state.
+
+
+### A Simple Graph Example
+Below is a simple graph example using LangGraph, it's has 3 nodes and one conditional edge using LangGraph.
+
+![Simple Graph Example](simple_graph.png)
+
+#### Installation
+
+First, install the required dependencies:
+
+```bash
+pip install --quiet -U langgraph
+```
+
+#### Code Implementation
+
+#### Imports
+
+```python
+from typing_extensions import TypedDict
+from typing import Literal
+import random
+from langgraph.graph import StateGraph, START, END
+from IPython.display import Image, display
+```
+
+#### State Definition
+
+The State schema serves as the input schema for all Nodes and Edges in the graph. We use `TypedDict` which provides type hints for the keys.
+
+```python
+class State(TypedDict):
+    graph_state: str
+```
+
+**Key Points:**
+- The state is a `TypedDict` that defines the structure of data flowing through the graph
+- All nodes can access and modify the state
+- The state is passed as the first argument to each node function
+
+#### Node Functions
+
+Nodes are Python functions that process the state. Each node:
+- Receives the current state as the first positional argument
+- Can access state keys using dictionary syntax: `state['graph_state']`
+- Returns a dictionary with updated state values
+- By default, returned values override the prior state
+
+```python
+def node_1(state):
+    """First node that adds ' I am' to the graph state."""
+    print("---Node 1---")
+    return {"graph_state": state['graph_state'] + " I am"}
+
+
+def node_2(state):
+    """Second node that adds ' happy!' to the graph state."""
+    print("---Node 2---")
+    return {"graph_state": state['graph_state'] + " happy!"}
+
+
+def node_3(state):
+    """Third node that adds ' sad!' to the graph state."""
+    print("---Node 3---")
+    return {"graph_state": state['graph_state'] + " sad!"}
+
+
+def node_4(state):
+    """Fourth node that adds ' Indifferent!' to the graph state."""
+    print("---Node 4---")
+    return {"graph_state": state['graph_state'] + " Indifferent!"}
+```
+
+#### Edge Functions
+
+Edges connect nodes in the graph:
+
+- **Normal Edges**: Always route from one node to another (e.g., `node_1` → `node_2`)
+- **Conditional Edges**: Optionally route between nodes based on logic
+
+Conditional edges are implemented as functions that return the next node to visit based on the current state.
+
+```python
+def decide_mood(state) -> Literal["node_2", "node_3", "node_4"]:
+    """
+    Conditional edge function that decides which node to visit next.
+    
+    Routing probabilities:
+    - 20% → node_2 (happy)
+    - 60% → node_4 (indifferent)
+    - 20% → node_3 (sad)
+    """
+    user_input = state['graph_state']
+    
+    # Random decision logic
+    if random.random() < 0.2:
+        return "node_2"  # 20% chance
+    elif random.random() < 0.8:
+        return "node_4"  # 60% chance
+    else:
+        return "node_3"  # 20% chance
+```
+
+**Note:** In a real application, you would typically use the state content to make routing decisions rather than random selection.
+
+#### Graph Construction
+
+Build the graph by:
+1. Initializing a `StateGraph` with the `State` class
+2. Adding nodes to the graph
+3. Adding edges (normal and conditional)
+4. Compiling the graph to validate its structure
+
+```python
+# Initialize the graph builder
+builder = StateGraph(State)
+
+# Add all nodes
+builder.add_node("node_1", node_1)
+builder.add_node("node_2", node_2)
+builder.add_node("node_3", node_3)
+builder.add_node("node_4", node_4)
+
+# Entry point
+builder.add_edge(START, "node_1")  
+# Conditional routing
+builder.add_conditional_edges("node_1", decide_mood)  
+# Exit points
+builder.add_edge("node_2", END)  
+builder.add_edge("node_3", END)
+builder.add_edge("node_4", END)
+
+# Compile the graph (performs validation)
+graph = builder.compile()
+```
+
+You could view the graph by running command below
+```python
+display(Image(graph.get_graph().draw_mermaid_png()))
+```
+
+![Simple Graph Example](langgraph_simple_rendering.png)
