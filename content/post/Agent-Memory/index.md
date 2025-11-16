@@ -166,6 +166,39 @@ LOCATION_KEY = "location"
 
 # Initialize Memory Store
 memory_store = InMemoryStore()
+
+# Create namespaces for users
+user_namespace_1 = (USER_ID_1, APPLICATION_CONTEXT)
+user_namespace_2 = (USER_ID_2, APPLICATION_CONTEXT)
+
+# Define memory node function
+def use_memory(state: MessagesState, config: RunnableConfig, *, store: BaseStore):
+    """Node that retrieves and uses long-term memory for a user."""
+    user_id = config["configurable"]["user_id"]
+    user_namespace = (user_id, APPLICATION_CONTEXT)
+    
+    # Retrieve all memories for this user
+    user_memories = store.search(user_namespace)
+    
+    # Format memory information
+    memory_text = ", ".join([
+        f"{k}: {v}" 
+        for mem in user_memories 
+        for k, v in mem.value.items()
+    ])
+    
+    response = f"I remember: {memory_text}"
+    return {"messages": [AIMessage(content=response)]}
+
+# Build and compile graph with memory store
+memory_graph = StateGraph(MessagesState)
+memory_graph.add_node("use_memory", use_memory)
+memory_graph.add_edge(START, "use_memory")
+memory_graph.add_edge("use_memory", END)
+memory_graph = memory_graph.compile(
+    checkpointer=InMemorySaver(), 
+    store=memory_store
+)
 ```
 
 #### Example 1: Basic Memory Operations
@@ -180,9 +213,6 @@ This example demonstrates the core operations for working with long-term memory:
 ```python
 print("=" * 60)
 print("EXAMPLE 1: Basic Memory Operations")
-
-# Create namespace for user 1
-user_namespace_1 = (USER_ID_1, APPLICATION_CONTEXT)
 
 # Store a memory
 preferences_memory = {
@@ -224,36 +254,6 @@ food_memory = {"favorite": "pizza"}
 location_memory = {"city": "Milwaukee"}
 memory_store.put(user_namespace_1, FOOD_KEY, food_memory)
 memory_store.put(user_namespace_1, LOCATION_KEY, location_memory)
-
-
-def use_memory(state: MessagesState, config: RunnableConfig, *, store: BaseStore):
-    """Node that retrieves and uses long-term memory for a user."""
-    user_id = config["configurable"]["user_id"]
-    user_namespace = (user_id, APPLICATION_CONTEXT)
-    
-    # Retrieve all memories for this user
-    user_memories = store.search(user_namespace)
-    
-    # Format memory information
-    memory_text = ", ".join([
-        f"{k}: {v}" 
-        for mem in user_memories 
-        for k, v in mem.value.items()
-    ])
-    
-    response = f"I remember: {memory_text}"
-    return {"messages": [AIMessage(content=response)]}
-
-
-# Build and compile graph with memory store
-memory_graph = StateGraph(MessagesState)
-memory_graph.add_node("use_memory", use_memory)
-memory_graph.add_edge(START, "use_memory")
-memory_graph.add_edge("use_memory", END)
-memory_graph = memory_graph.compile(
-    checkpointer=InMemorySaver(), 
-    store=memory_store
-)
 
 # Thread 1: First conversation with user 1
 print("\nUser 1 - Thread 1:")
@@ -310,7 +310,6 @@ print("=" * 60)
 print("EXAMPLE 3: Memory Isolation Between Users")
 
 # Store memory for a different user
-user_namespace_2 = (USER_ID_2, APPLICATION_CONTEXT)
 user2_food_memory = {"favorite": "Hotpot"}
 memory_store.put(user_namespace_2, FOOD_KEY, user2_food_memory)
 
