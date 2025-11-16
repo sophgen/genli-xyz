@@ -139,11 +139,38 @@ Result: {'foo': 'b', 'bar': ['a', 'b', 'a', 'b', 'a', 'b']}
 
 ### Long-term Memory Example
 
-Long-term memory in LangGraph uses a memory store to persist information across sessions and threads. The following examples demonstrate core operations with three separate scenarios.
+There are three examples demonstrating long-term memory using a memory store.
 
-#### Setup
+#### Example 1: Basic Memory Operations
+**What it demonstrates:** Core operations for working with long-term memory.
 
-First, we'll set up the memory store and configuration that will be used across all examples:
+- **Store**: Use `store.put(namespace, key, value)` to save memories
+- **Retrieve**: Use `store.get(namespace, key)` to fetch a specific memory by key
+- **Search**: Use `store.search(namespace)` to find all memories in a namespace
+
+**Key concept:** Memories are organized by namespaces (tuples like `(user_id, context)`) and identified by unique keys within each namespace.
+
+---
+
+#### Example 2: Memory Persistence Across Threads
+**What it demonstrates:** Long-term memory persists across different conversation threads for the same user.
+
+- Creates a LangGraph that uses the memory store
+- Shows that User 1's memories are accessible in Thread 1
+- Demonstrates that the same memories are still available in Thread 2 (different thread, same user)
+
+**Key concept:** Unlike short-term memory (checkpointer), long-term memory (store) persists across threads, allowing users to have consistent experiences across multiple conversations.
+
+---
+
+#### Example 3: Memory Isolation Between Users
+**What it demonstrates:** Different users have completely separate memory namespaces.
+
+- Stores a memory for User 2 (favorite food: Hotpot)
+- Shows User 2 can only access their own memories
+- Verifies User 1's memories remain unchanged and isolated
+
+**Key concept:** Namespaces provide memory isolation - each user's memories are stored separately and cannot access other users' data, ensuring privacy and data separation.
 
 ```python
 from langgraph.store.memory import InMemoryStore
@@ -153,7 +180,9 @@ from langchain_core.runnables import RunnableConfig
 from langgraph.store.base import BaseStore
 from langchain_core.messages import HumanMessage, AIMessage
 
+# ============================================================================
 # Configuration Constants
+# ============================================================================
 USER_ID_1 = "user-1"
 USER_ID_2 = "user-2"
 THREAD_ID_1 = "thread-1"
@@ -164,20 +193,14 @@ PREFERENCES_KEY = "preferences"
 FOOD_KEY = "food"
 LOCATION_KEY = "location"
 
+# ============================================================================
 # Initialize Memory Store
+# ============================================================================
 memory_store = InMemoryStore()
-```
 
-#### Example 1: Basic Memory Operations
-
-This example demonstrates the core operations for working with long-term memory:
-- **Store**: Use `store.put(namespace, key, value)` to save memories
-- **Retrieve**: Use `store.get(namespace, key)` to fetch a specific memory by key
-- **Search**: Use `store.search(namespace)` to find all memories in a namespace
-
-**Key concept:** Memories are organized by namespaces (tuples like `(user_id, context)`) and identified by unique keys within each namespace.
-
-```python
+# ============================================================================
+# EXAMPLE 1: Basic Memory Operations (Store, Retrieve, Search)
+# ============================================================================
 print("=" * 60)
 print("EXAMPLE 1: Basic Memory Operations")
 
@@ -199,23 +222,10 @@ print(f"Retrieved: {retrieved_memory.value}")
 all_user_memories = memory_store.search(user_namespace_1)
 print(f"Found {len(all_user_memories)} memory(ies) in namespace")
 print()
-```
 
-Output:
-```
-============================================================
-EXAMPLE 1: Basic Memory Operations
-Retrieved: {'language': 'English', 'style': 'direct and concise'}
-Found 1 memory(ies) in namespace
-```
-
-#### Example 2: Memory Persistence Across Threads
-
-This example shows how long-term memory persists across different conversation threads for the same user. We'll create a LangGraph that retrieves and uses stored memories, demonstrating that User 1's memories are accessible in both Thread 1 and Thread 2.
-
-**Key concept:** Unlike short-term memory (checkpointer), long-term memory (store) persists across threads, allowing users to have consistent experiences across multiple conversations.
-
-```python
+# ============================================================================
+# EXAMPLE 2: Memory Persistence Across Threads
+# ============================================================================
 print("=" * 60)
 print("EXAMPLE 2: Memory Persists Across Threads")
 
@@ -284,28 +294,10 @@ user1_thread2_result = memory_graph.invoke(
 print(f"Response: {user1_thread2_result['messages'][-1].content}")
 print("Memories persist across threads for the same user!")
 print()
-```
 
-Output:
-```
-============================================================
-EXAMPLE 2: Memory Persists Across Threads
-
-User 1 - Thread 1:
-Response: I remember: language: English, style: direct and concise, favorite: pizza, city: Milwaukee
-
-User 1 - Thread 2 (different thread, same user):
-Response: I remember: language: English, style: direct and concise, favorite: pizza, city: Milwaukee
-Memories persist across threads for the same user!
-```
-
-#### Example 3: Memory Isolation Between Users
-
-This example demonstrates that different users have completely separate memory namespaces. We'll store a memory for User 2 and verify that User 1's memories remain unchanged and isolated.
-
-**Key concept:** Namespaces provide memory isolation - each user's memories are stored separately and cannot access other users' data, ensuring privacy and data separation.
-
-```python
+# ============================================================================
+# EXAMPLE 3: Memory Isolation Between Users
+# ============================================================================
 print("=" * 60)
 print("EXAMPLE 3: Memory Isolation Between Users")
 
@@ -339,8 +331,23 @@ for memory_item in user1_memories:
 print("\nDifferent users have separate, isolated memories!")
 ```
 
-Output:
+Output
 ```
+============================================================
+EXAMPLE 1: Basic Memory Operations
+Retrieved: {'language': 'English', 'style': 'direct and concise'}
+Found 1 memory(ies) in namespace
+
+============================================================
+EXAMPLE 2: Memory Persists Across Threads
+
+User 1 - Thread 1:
+Response: I remember: language: English, style: direct and concise, favorite: pizza, city: Milwaukee
+
+User 1 - Thread 2 (different thread, same user):
+Response: I remember: language: English, style: direct and concise, favorite: pizza, city: Milwaukee
+Memories persist across threads for the same user!
+
 ============================================================
 EXAMPLE 3: Memory Isolation Between Users
 
