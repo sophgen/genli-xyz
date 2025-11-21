@@ -32,7 +32,7 @@ Models suffer from **"context rot"** - where reasoning capabilities degrade, lat
 ## The Anatomy of Effective Context
 To manage the finite attention budget, you must find the smallest set of high-signal tokens.
 
-*   **System Prompts**: Aim for the "Goldilocks zone" of altitude—specific enough to guide behavior but flexible enough to allow the model to use its own heuristics. Avoid hardcoding brittle logic.
+*   **System Prompts**: Aim for the "Goldilocks zone" of altitude - specific enough to guide behavior but flexible enough to allow the model to use its own heuristics. Avoid hardcoding brittle logic.
 *   **Tools**: Tools define the contract between agents and their environment. They should be token-efficient and self-contained. If a human engineer can't definitively say which tool to use, the agent won't either. Avoid bloated toolsets.
 *   **Examples**: Instead of a laundry list of edge cases, curate a set of diverse, canonical examples (few-shot prompting) that effectively portray the expected behavior.
 
@@ -62,7 +62,7 @@ Agents should regularly write notes to persistent memory outside the context win
 *   It enables long-horizon tasks that span hours, as the agent can "read" its own memory to restore state.
 
 ### 4. Context Isolation
-*   **Communicating**: For distinct tasks (e.g., "Find this code snippet"), spin up a sub-agent with a fresh context window. Give it instructions, let it work, and accept only the final answer.
+*   **Delegation**: For distinct tasks (e.g., "Find this code snippet"), spin up a sub-agent with a fresh context window. Give it instructions, let it work, and accept only the final answer.
 *   **Sharing Memory**: Only share the full context history with sub-agents if the task absolutely requires understanding the full nuance of previous actions.
 
 
