@@ -12,6 +12,26 @@ tags:
   - "gen-ai"
 image: "cover.png"
 comments: true
+image_alt: "Diagram of interconnected agent design patterns"
+---
+
+## Overview
+
+This catalogue presents core architectural patterns for building intelligent, agentic AI systems. Each pattern addresses different trade‑offs across latency, cost, complexity, specialization, safety, and extensibility. Use this guide to (a) pick the minimal viable pattern for an initial prototype and (b) understand how to layer patterns together as requirements grow (e.g., start with a Single Agent, add Tool-Use for capability, then Memory/RAG for context persistence, introduce Reflection for quality, Router for specialization, Supervisor for scale, and Human‑in‑the‑Loop for risk control).
+
+### Pattern Comparison Matrix
+
+| Pattern | Primary Purpose | Typical Latency | Architectural Complexity | Relative Cost | Strengths | Watch Outs |
+|---------|-----------------|-----------------|--------------------------|--------------|-----------|-----------|
+| Single Agent | Direct responses | Low | Very Low | Low | Fast, simple | Limited scope, single failure point |
+| Chain-of-Thought | Structured reasoning | Medium | Low | Medium | Explainability, better logic | Higher token usage |
+| Tool-Using | Capability extension | Medium | Medium | Medium | Real-time data, accurate math | Tool selection & error handling |
+| Memory / RAG | Context persistence & grounding | Medium | Medium | Medium | Personalization, reduced hallucination | Retrieval quality, storage/privacy |
+| ReAct | Adaptive multi-step reasoning + action | High | Medium | High | Dynamic interaction, interpretable | Possible loops, cost |
+| Human-in-the-Loop | Risk mitigation & compliance | Variable | Medium | High (human time) | Safety, auditability | Throughput bottleneck |
+| Reflection | Self-quality improvement | High | Medium | High | Polished outputs, error reduction | Iteration overhead |
+| Router | Intent-based specialization | Low–Medium | Medium | Optimizable | Domain specialization, resource efficiency | Misrouting risks |
+| Supervisor (Hierarchical) | Complex task orchestration | High | High | High | Decomposition, parallelism | Coordination overhead |
 ---
 
 ## 1. Single Agent Pattern
@@ -74,6 +94,14 @@ app = workflow.compile()
 result = app.invoke({"messages": [{"role": "user", "content": "Hello!"}]})
 print(result["response"])
 ```
+
+### Implementation Notes
+
+- Separate short-term conversational context (recent message list) from long-term memory (vector store of summarized interactions or domain documents). Do not blindly append all raw messages to persistent storage.
+- Consider a memory schema: `{timestamp, role, content, tags, importance_score}` to enable pruning and compliance filtering.
+- Add an embedding-backed summarization step for every N messages to reduce token growth.
+- Privacy: obtain explicit user consent before storing personally identifiable information. Encrypt sensitive memory at rest; define retention and deletion policy.
+- Fall back gracefully when retrieval returns low-similarity results (e.g., require a minimum similarity threshold and proceed without augmentation if not met).
 
 ---
 
@@ -163,6 +191,14 @@ result = app.invoke({"problem": "If a train travels 60 mph for 2.5 hours, how fa
 print(f"Steps: {result['reasoning_steps']}")
 print(f"Answer: {result['final_answer']}")
 ```
+
+### Implementation Notes
+
+- Structured steps: ask for numbered steps and return as a JSON array for reliable parsing; separate reasoning from the final answer field.
+- Verbosity control: cap steps (e.g., 3–5) and request “minimal sufficient steps” to manage tokens and latency.
+- Determinism: set lower temperature for consistent reasoning; optionally enable a brief self-check before finalizing.
+- Privacy: avoid logging raw chain-of-thought to analytics; store only summaries or conclusions.
+- Guardrails: validate the final answer independently when possible (e.g., verify equations, run unit checks), not the rationale text.
 
 ---
 
@@ -255,6 +291,14 @@ app = workflow.compile()
 result = app.invoke({"messages": [{"role": "user", "content": "What is 25 * 47?"}]})
 print(result["messages"][-1].content)
 ```
+
+### Implementation Notes
+
+- Tool schema: bind tools with explicit argument schemas and validate inputs; reject unknown tool names to prevent hallucinated calls.
+- Selection reliability: request structured output (e.g., tool name + args JSON) rather than substring checks; enforce allowlists.
+- Error handling: add retries with backoff for transient failures; surface user-friendly errors and fallbacks.
+- Security: sandbox tool execution, redact sensitive data in logs, and set per-tool timeouts and quotas.
+- Performance: cache deterministic tool responses and batch/parallelize independent tool calls when safe.
 
 ---
 
@@ -369,6 +413,14 @@ app = workflow.compile()
 result = app.invoke({"query": "What is LangGraph?", "memory": []})
 print(result["response"])
 ```
+
+### Implementation Notes
+
+- Chunking & embeddings: tune chunk size/overlap for your corpus; choose embeddings aligned with domain vocabulary and language.
+- Retriever quality: experiment with hybrid search (BM25 + vector) and rerankers; set a similarity threshold and fallback to generation if below.
+- Citations: include source attributions with spans or doc IDs in the prompt to anchor responses and aid debugging.
+- Memory separation: keep ephemeral chat memory distinct from long-term knowledge; summarize and prune using importance scores.
+- Operations: persist vector stores, schedule re-embeddings for updated docs, and attach metadata (timestamp, tags) for governance and TTL.
 
 ---
 
@@ -499,6 +551,13 @@ result = app.invoke({"input": "What's the weather in San Francisco?"})
 print(f"Final: {result.get('final_answer', result['steps'][-1])}")
 ```
 
+### Implementation Notes
+
+- Loop Prevention: enforce `max_iterations` (e.g., 5) and break if the latest thought repeats previous wording (basic dedup heuristic).
+- Tool Selection: request structured output (JSON) with keys `action` and `arguments` rather than substring matching; increases reliability.
+- Observation Compression: when steps grow, summarize earlier steps to stay within token limits.
+- Safety: restrict tool arguments to validated patterns (e.g., regex for calculator inputs) to avoid prompt injection via tool calls.
+
 ---
 
 ## 6. Human-in-the-Loop Pattern
@@ -602,6 +661,14 @@ config = {"configurable": {"thread_id": "1"}}
 result = app.invoke({"task": "Delete production database"}, config)
 print(result["result"])
 ```
+
+### Implementation Notes
+
+- Replace direct `input()` usage with an external approval UI or workflow queue (e.g., message bus event consumed by a human dashboard) for scalability.
+- Audit Logging: persist proposed action, rationale, human decision, timestamp, and actor ID for compliance.
+- Timeouts & Escalation: if no human response within SLA window, auto-escalate to a fallback reviewer or abort safely.
+- Granular Scopes: request human approval only for high-risk operations (e.g., destructive database commands) using a risk classifier.
+- Redaction: show humans sanitized versions of sensitive data fields; reconstruct full payload only after approval.
 
 ---
 
@@ -716,6 +783,13 @@ print(f"Iterations: {result['iterations']}")
 print(f"Final: {result['final_output']}")
 ```
 
+### Implementation Notes
+
+- Set an upper bound on iterations (`max_iterations`) and track improvement delta; stop early if critique repeats or quality score stagnates.
+- Use a separate lightweight scoring pass (e.g., rubric JSON) to quantify improvements instead of relying on string "APPROVED".
+- Maintain a critique history to avoid oscillation; include previous critiques in the prompt.
+- Cost Control: reflection multiplies calls—enable via a feature flag in production.
+
 ---
 
 ## 8. Router Pattern (Classifier)
@@ -827,6 +901,13 @@ app = workflow.compile()
 result = app.invoke({"query": "My app keeps crashing"})
 print(result["response"])
 ```
+
+### Implementation Notes
+
+- Intent Classification: request JSON output `{"category": "technical_support"}` then validate against an allowlist.
+- Fallback Strategy: if confidence low or intent ambiguous, route to a general classifier agent for clarification.
+- Cost Optimization: map lightweight intents to cheaper models; only escalate complex queries.
+- Monitoring: log misroutes and user corrections to retrain classifier periodically.
 
 ---
 
@@ -965,6 +1046,13 @@ print(f"Plan: {result['plan']}")
 print(f"Results: {result['results']}")
 print(f"Final: {result['final_output']}")
 ```
+
+### Implementation Notes
+
+- Parallelism: convert sequential worker invocation into parallel tasks where independence is guaranteed (e.g., researcher and coder can start simultaneously).
+- Planning Quality: validate supervisor decomposition with a rubric (coverage, feasibility, ordering) before dispatch.
+- Worker Isolation: sandbox each worker's tool access; coder should not have research APIs unless needed.
+- Aggregation: after collecting results, perform a consistency check pass (e.g., reviewer re-validates integrated answer before finalization).
 
 ## References
 
