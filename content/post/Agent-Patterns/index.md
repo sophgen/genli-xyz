@@ -178,8 +178,8 @@ Provide 3-5 numbered reasoning steps."""
     return state
 
 def answer_node(state: CoTState) -> CoTState:
-    """Generate final answer based on reasoning steps"""
-    llm = ChatOpenAI(model="gpt-5-mini")
+    """Generate final answer based on reasoning steps, use a even cheaper model"""
+    llm = ChatOpenAI(model="gpt-5-nano")
     steps_text = '\n'.join(state['reasoning_steps'])
     prompt = f"""Based on these reasoning steps, provide the final answer:
     
@@ -214,17 +214,17 @@ print(f"Answer: {result['final_answer']}")
 display(Image(app.get_graph(xray=True).draw_mermaid_png()))
 ```
 
-![Single Agent](cot_agent.png)
+![Cot Agent](cot_agent.png)
 
 ```
 Steps: 
 [
-    '1) Compute distances for each moving segment: 9:00–10:30 is 1.5 h at 60 mph → 60×1.5 = 90 mi. After a 15-min (0.25 h) stop, it goes 2 h at 75 mph → 75×2 = 150 mi. Finally 1.5 h (90 min) at 50 mph → 50×1.5 = 75 mi.', 
-    '2) Total distance = 90 + 150 + 75 = 315 miles.', 
-    '3) Total time = travel times + stop = 1.5 + 0.25 + 2 + 1.5 = 5.25 hours.', 
-    '4) Average speed = total distance / total time = 315 / 5.25 = 60 mph.'
+    '1) Compute distances for each travel segment: first leg 1.5 h at 60 mph → 60×1.5 = 90 mi; second leg 2 h at 75 mph → 75×2 = 150 mi; third leg 1.5 h at 50 mph → 50×1.5 = 75 mi.', 
+    '2) Add distances: 90 + 150 + 75 = 315 miles total.', 
+    '3) Compute total time including the 15-minute stop: travel time 1.5 + 2 + 1.5 = 5.0 h, plus stop 0.25 h → total time = 5.25 h.', 
+    '4) Average speed = total distance / total time = 315 ÷ 5.25 = 60 mph.'
 ]
-Answer: Final answer: 60 mph.
+Answer: 60 mph
 ```
 
 
