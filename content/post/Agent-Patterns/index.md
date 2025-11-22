@@ -6,6 +6,7 @@ date: 2025-11-22T07:34:13-06:00
 draft: true
 categories:
   - "ai-agent"
+  - "design-patterns"
 tags:
   - "agent-patterns"
   - "architecture"
