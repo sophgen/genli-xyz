@@ -3,6 +3,9 @@ languageCode = "en-us"
 title = "Neural Nonsense"
 copyright = "© Your Name"
 
+# Enable Git info for automatic lastmod tracking
+enableGitInfo = true
+
 [pagination]
 pagerSize = 5
 
