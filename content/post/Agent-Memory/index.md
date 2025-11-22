@@ -8,7 +8,7 @@ categories:
   - "ai-agent"
 tags:
   - "agent-memory"
-  - "LangGraph"
+  - "langgraph"
 image: "cover.png"
 comments: true
 ---

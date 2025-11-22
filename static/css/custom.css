@@ -36,3 +36,91 @@ h3.article-subtitle {
     margin-top: auto !important;
 }
 
+/* Mermaid diagram styling - centered with white background and dynamic sizing */
+.mermaid {
+    display: block !important;
+    background-color: white !important;
+    padding: 1rem !important;
+    border-radius: 8px !important;
+    margin: 2rem auto !important;
+    max-width: min(90vw, 600px) !important;
+    width: 100% !important;
+    text-align: center !important;
+    overflow: auto !important;
+}
+
+/* Ensure Mermaid SVG has white background and proper sizing */
+.mermaid svg {
+    background-color: white !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+/* Responsive sizing for different screen sizes */
+@media (max-width: 768px) {
+    .mermaid {
+        max-width: 95vw !important;
+        padding: 0.75rem !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .mermaid {
+        max-width: min(70vw, 700px) !important;
+    }
+}
+
+/* Center the container */
+.article-content .mermaid {
+    text-align: center !important;
+}
+
+/* Code block styling - black background */
+.chroma,
+.highlight,
+pre,
+.highlight pre {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* Override inline styles on pre elements */
+.highlight pre[style*="background-color"] {
+    background-color: #000000 !important;
+}
+
+/* Ensure code text is visible on black background */
+.chroma code,
+.highlight code,
+pre code,
+.highlight pre code {
+    color: #ffffff !important;
+    background-color: transparent !important;
+}
+
+/* Reduce size of first two diagrams (Single Agent Pattern and CoT Pattern) to half */
+.article-content .mermaid:nth-of-type(1),
+.article-content .mermaid:nth-of-type(2) {
+    max-width: min(45vw, 300px) !important;
+    padding: 0.5rem !important;
+    margin: 1rem auto !important;
+}
+
+/* Responsive adjustments for smaller diagrams */
+@media (max-width: 768px) {
+    .article-content .mermaid:nth-of-type(1),
+    .article-content .mermaid:nth-of-type(2) {
+        max-width: min(47.5vw, 250px) !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .article-content .mermaid:nth-of-type(1),
+    .article-content .mermaid:nth-of-type(2) {
+        max-width: min(35vw, 350px) !important;
+    }
+}
+

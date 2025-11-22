@@ -11,7 +11,7 @@ tags:
   - "pregel"
   - "graph-processing"
   - "distributed-systems"
-  - "LangGraph"
+  - "langgraph"
   - "algorithms"
 image: "cover.png"
 comments: true

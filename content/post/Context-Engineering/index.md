@@ -8,8 +8,7 @@ categories:
   - "ai-agent"
   - "context-engineering"
 tags:
-  - "context-engineering"
-  - "LangChain"
+  - "langchain"
 image: "cover.png"
 comments: true
 ---

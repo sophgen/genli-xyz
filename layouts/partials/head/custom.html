@@ -1,3 +1,42 @@
 <!-- Custom CSS for article subtitle -->
 <link rel="stylesheet" href="{{ "css/custom.css" | relURL }}">
 
+<!-- Mermaid.js for diagram rendering -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  (function() {
+    function initMermaid() {
+      if (typeof mermaid !== 'undefined') {
+        mermaid.initialize({ 
+          startOnLoad: true,
+          theme: 'default',
+          securityLevel: 'loose',
+          flowchart: {
+            useMaxWidth: true,
+            htmlLabels: true,
+            curve: 'basis'
+          },
+          themeVariables: {
+            background: '#ffffff',
+            primaryColor: '#ffffff',
+            primaryTextColor: '#000000',
+            primaryBorderColor: '#000000',
+            lineColor: '#000000',
+            secondaryColor: '#f4f4f4',
+            tertiaryColor: '#ffffff'
+          }
+        });
+        return true;
+      }
+      return false;
+    }
+    
+    // Try to initialize immediately if Mermaid is already loaded
+    if (!initMermaid()) {
+      // If not loaded yet, wait for DOMContentLoaded
+      document.addEventListener('DOMContentLoaded', initMermaid);
+      // Also try on window load as fallback
+      window.addEventListener('load', initMermaid);
+    }
+  })();
+</script>

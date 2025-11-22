@@ -1,0 +1,8 @@
+{{- if eq .Type "mermaid" -}}
+<div class="mermaid">
+{{ .Inner }}
+</div>
+{{- else -}}
+{{ highlight .Inner .Type }}
+{{- end -}}
+

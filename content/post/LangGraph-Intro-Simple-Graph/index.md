@@ -7,7 +7,7 @@ draft: false
 categories:
   - "ai-agent"
 tags:
-  - "LangGraph"
+  - "langgraph"
 image: "cover.png"
 comments: true
 ---
