@@ -10,6 +10,7 @@ categories:
 tags:
   - "agent-patterns"
   - "architecture"
+  - "langgraph"
 image: "cover.png"
 comments: true
 image_alt: "Diagram of interconnected agent design patterns"
