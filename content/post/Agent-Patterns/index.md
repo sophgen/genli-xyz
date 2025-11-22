@@ -70,6 +70,8 @@ flowchart TD
 from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, END
 from typing import TypedDict
+from IPython.display import Image, display
+
 
 class AgentState(TypedDict):
     messages: list
@@ -92,13 +94,19 @@ app = workflow.compile()
 # Run
 result = app.invoke({"messages": [{"role": "user", "content": "Hello!"}]})
 print(result["response"])
+
+# Print the graph
+display(Image(app.get_graph(xray=True).draw_mermaid_png()))
 ```
 
+Output:
+```
+Hi — hello! How can I help you today? 
 
+I can answer questions, draft or edit text, summarize, translate, help with coding or math, make plans, brainstorm, or anything else you need. What would you like to do?
+```
 ![Single Agent](single_agent.png)
-```
-Hi there! How can I help you today?
-```
+
 
 ### Implementation Notes
 
@@ -213,9 +221,7 @@ print(f"Answer: {result['final_answer']}")
 # Print the graph
 display(Image(app.get_graph(xray=True).draw_mermaid_png()))
 ```
-
-![Cot Agent](cot_agent.png)
-
+Output:
 ```
 Steps: 
 [
@@ -227,6 +233,8 @@ Steps:
 Answer: 60 mph
 ```
 
+![Cot Agent](cot_agent.png)
+
 
 ### Implementation Notes
 
@@ -235,5 +243,141 @@ Answer: 60 mph
 - Determinism: set lower temperature for consistent reasoning; optionally enable a brief self-check before finalizing.
 - Privacy: avoid logging raw chain-of-thought to analytics; store only summaries or conclusions.
 - Guardrails: validate the final answer independently when possible (e.g., verify equations, run unit checks), not the rationale text.
+
+---
+
+
+## 3. Tool-Using Agent Pattern
+
+Agent extends capabilities by calling external tools, APIs, or services for specialized tasks.
+
+```mermaid
+flowchart TD
+    E[Environment] -- Perceive --> A[Tool-Using Agent]
+    A -- Action --> E
+    A -- Tool Call --> T[External Tool/API]
+    T -- Result --> A
+    subgraph Agent
+        A
+    end
+```
+
+### Use Cases
+- **Data retrieval and analysis**: Querying databases, APIs, or data warehouses
+- **Real-time information access**: Fetching weather, stock prices, or news updates
+- **Mathematical computations**: Performing calculations beyond LLM capabilities
+- **File system operations**: Reading, writing, or managing files and directories
+
+### Advantages
+- **Access to real-time data**: Can retrieve current information beyond training cutoff
+- **Accurate computations**: Delegates math to specialized tools rather than approximating
+- **Extensibility**: Easy to add new capabilities by integrating additional tools
+- **Reduced hallucination**: Facts come from reliable external sources
+
+### Limitations
+- **Tool selection challenges**: Agent may choose wrong tool or use it incorrectly
+- **Error handling overhead**: Must manage failures from external tools gracefully
+- **Security concerns**: External tool access creates potential vulnerabilities
+- **Latency from tool calls**: Network requests add delay to response times
+
+### LangGraph Example
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.tools import tool
+from langgraph.graph import StateGraph, END
+from langgraph.prebuilt import ToolNode
+from typing import TypedDict, Annotated
+import operator
+from IPython.display import Image, display
+
+
+@tool
+def calculator(expression: str) -> str:
+    """Evaluates a mathematical expression"""
+    try:
+        return str(eval(expression))
+    except:
+        return "Error in calculation"
+
+@tool
+def number_formatter(number: str, format_type: str = "all") -> str:
+    """Formats a number in different representations (binary, hexadecimal, scientific notation, etc.)
+    
+    Args:
+        number: The number to format (as a string)
+        format_type: The format to use - 'binary', 'hex', 'scientific', 'all' (default)
+    """
+    try:
+        num = int(float(number))
+        results = []
+        
+        if format_type in ["binary", "all"]:
+            results.append(f"Binary: {bin(num)}")
+        if format_type in ["hex", "all"]:
+            results.append(f"Hexadecimal: {hex(num)}")
+        if format_type in ["scientific", "all"]:
+            results.append(f"Scientific: {num:.2e}")
+        if format_type == "all":
+            results.append(f"Decimal: {num:,}")
+            results.append(f"Octal: {oct(num)}")
+        
+        return "\n".join(results)
+    except:
+        return f"Error formatting number: {number}"
+
+class ToolAgentState(TypedDict):
+    messages: Annotated[list, operator.add]
+    
+def agent_node(state: ToolAgentState) -> ToolAgentState:
+    """Agent decides whether to use tools"""
+    llm = ChatOpenAI(model="gpt-5-mini").bind_tools([calculator, number_formatter])
+    response = llm.invoke(state["messages"])
+    return {"messages": [response]}
+
+def should_continue(state: ToolAgentState) -> str:
+    """Route to tools or end"""
+    last_message = state["messages"][-1]
+    if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
+        return "tools"
+    return "end"
+
+# Build graph
+workflow = StateGraph(ToolAgentState)
+workflow.add_node("agent", agent_node)
+workflow.add_node("tools", ToolNode([calculator, number_formatter]))
+workflow.set_entry_point("agent")
+workflow.add_conditional_edges("agent", should_continue, {
+    "tools": "tools",
+    "end": END
+})
+workflow.add_edge("tools", "agent")
+
+app = workflow.compile()
+
+# Run
+result = app.invoke({"messages": [{"role": "user", "content": "Calculate 2^10 and then format that number in binary and scientific"}]})
+print(result["messages"][-1].content)
+
+# Print the graph
+display(Image(app.get_graph(xray=True).draw_mermaid_png()))
+```
+Output:
+```
+2^10 = 1024
+
+Binary: 0b10000000000
+Scientific (normalized): 1.024 × 10^3 (or 1.024e+03)
+```
+![Agent Tool Calling](tool_calling.png)
+
+
+### Implementation Notes
+
+- Tool schema: bind tools with explicit argument schemas and validate inputs; reject unknown tool names to prevent hallucinated calls.
+- Selection reliability: request structured output (e.g., tool name + args JSON) rather than substring checks; enforce allowlists.
+- Error handling: add retries with backoff for transient failures; surface user-friendly errors and fallbacks.
+- Security: sandbox tool execution, redact sensitive data in logs, and set per-tool timeouts and quotas.
+- Performance: cache deterministic tool responses and batch/parallelize independent tool calls when safe.
 
 ---
