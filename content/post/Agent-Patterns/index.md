@@ -3,7 +3,7 @@ title: "Agent Patterns - Key Architectural Designs for Intelligent Systems"
 description: "Essential agent patterns for designing agentic AI systems and architectures."
 slug: "agent-patterns"
 date: 2025-11-22T07:34:13-06:00
-draft: true
+draft: false
 categories:
   - "ai-agent"
   - "design-patterns"
