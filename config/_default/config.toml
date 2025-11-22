@@ -21,3 +21,12 @@ disqusShortname = ""
 [permalinks]
 page = "/:slug/"
 
+# Markup configuration for Mermaid diagrams
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    style = "monokai"
+    codeFences = true
+    guessSyntax = true
